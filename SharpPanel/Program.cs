@@ -17,12 +17,12 @@ namespace SharpPanel
         public static void Main(string[] args)
         {
             Console.Title = "SharpPanel v0.1";
+            ConsoleHelper.Banner();
+            ConsoleHelper.Info();
 
             //check internet connection
             if (!CheckInternet())
             {
-                ConsoleHelper.Banner();
-                ConsoleHelper.Info();
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Connection Error! Please check your internet and try again");
                 Console.ReadKey();
@@ -34,9 +34,6 @@ namespace SharpPanel
             {
                 File.WriteAllText("List.txt", Properties.Resources.List);
             }
-
-            ConsoleHelper.Banner();
-            ConsoleHelper.Info();
 
             //check args or tell user to enter url
             string url = null;
@@ -67,10 +64,18 @@ namespace SharpPanel
             //loop for each line
             foreach (string line in File.ReadAllLines("List.txt"))
             {
+                Console.Write($"\nURL:{url + line}    STATUS:");
                 if (UrlIsValid(url + line))
                 {
-                    Console.WriteLine("press any key to continue..\n");
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.Write($"FOUND!\n");
+                    Console.ResetColor();
+                    Console.WriteLine("press any key to continue..");
                     Console.ReadKey();
+                }
+                else
+                {
+                    Console.Write($"NOT FOUND\n");
                 }
             }
             Console.WriteLine("End of List.txt");
@@ -95,14 +100,8 @@ namespace SharpPanel
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
                 HttpWebResponse response = (HttpWebResponse)request.GetResponse();
                 if (response.StatusCode == HttpStatusCode.OK) urlExists = true;
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"\nURL:{url}    STATUS:FOUND!");
-                Console.ResetColor();
             }
-            catch
-            {
-                Console.WriteLine($"URL:{url}    STATUS:NOT FOUND");
-            }
+            catch { }
             return urlExists;
         }
     }
